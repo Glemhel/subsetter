@@ -16,7 +16,7 @@ Analyze repository
 def subsetter(X: torch.tensor, method, opt_function, max_iterations=30, n_metrics=10):
     num_particles = 30
     optimizer = method(X, num_particles, opt_function, n_metrics=n_metrics)
-    for i in tqdm(range(max_iterations)):
+    for i in range(max_iterations):
         optimizer.step()
 
     return optimizer.get_best_metrics(), optimizer.get_best_opt_value()
@@ -32,14 +32,15 @@ def run_analysis(n_metrics=10):
 
     data = pd.read_csv(os.path.join('..', 'data', 'function_metrics.csv'), dtype=np.float32)
     data.rename(columns={'Unnamed: 0': 'repo_id'}, inplace=True)
-
+    data.repo_id = data.repo_id.astype(int)
+    repos_order_by_size = data.repo_id.value_counts().index.values
     opt_function = SammonError
     method = PSOFeatureSelection
     metrics_vote = np.zeros(data.shape[1])
     opt_values = []
     # for i in range(10, 11):
-    for i in tqdm(range(10, 110)):
-        repo_data = get_data_i(data, i)
+    for i in tqdm(range(30, 181)):
+        repo_data = get_data_i(data, repos_order_by_size[i])
         device = torch.device('cuda') 
         repo_data_cuda = repo_data.to(device)
         selected_metrics, opt_value = subsetter(repo_data_cuda, method, opt_function, n_metrics=n_metrics)
