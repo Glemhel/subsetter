@@ -10,9 +10,9 @@ class Metrics:
 
 
 class SammonError(Metrics):
-    def __init__(self, X):
+    def __init__(self, X, device='cpu'):
         self.X = X
-        self.device = torch.device('cuda') 
+        self.device = torch.device(device)
         self.n_classes = X.shape[0]
         self.n_metrics = X.shape[1]
         self.d_original = torch.cdist(X, X, p=2) + 1e-15
