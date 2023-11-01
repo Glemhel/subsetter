@@ -25,6 +25,7 @@ def get_data_i(data, i, kind='function'):
     return torch.tensor(datai.drop(columns=['repo_id']).values)
 
 def run_analysis(data,
+                 pbar,
                  metric_subset_size=10,
                  error_function=SammonError,
                  method=PSOFeatureSelection,
@@ -38,7 +39,8 @@ def run_analysis(data,
     torch.manual_seed(seed)
     selected_metrics_arr = []
     optimums_arr = []
-    for _ in range(n_runs):
+    for i in range(n_runs):
+        pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}")
         optimizer = method(data, num_particles, error_function, n_metrics=metric_subset_size, device=device)
         for _ in range(max_iterations):
             optimizer.step()
@@ -47,6 +49,10 @@ def run_analysis(data,
         selected_metrics_arr.append(selected_metrics.tolist())
         optimum_value = optimizer.get_best_opt_value()
         optimums_arr.append(optimum_value.tolist())
+        
+        optimizer = None
+        torch.cuda.empty_cache()
+        gc.collect()
 
     # ic(selected_metrics_arr)
     # ic(optimums_arr)
@@ -74,7 +80,7 @@ def main(args: argparse.Namespace):
     r = args.i_repo_start + args.n_repos if args.n_repos else len(indices_size_descending)
     # ic(args)
     # ic(r)
-    for repo_index in trange(args.i_repo_start, r):
+    for repo_index in (pbar := trange(args.i_repo_start, r)):
         index = indices_size_descending[repo_index]
         repo_data = get_data_i(data, index, args.kind)
         repo_data = repo_data.to(device)
@@ -82,7 +88,7 @@ def main(args: argparse.Namespace):
         repo_saved_info = {}
         # loop over metrics values
         for metric_subset_size in args.metrics_subset:
-            selected_metrics_arr, optimums_arr = run_analysis(repo_data,
+            selected_metrics_arr, optimums_arr = run_analysis(repo_data, pbar,
                  metric_subset_size=metric_subset_size,
                  error_function=metrics,
                  method=method,
@@ -92,6 +98,10 @@ def main(args: argparse.Namespace):
                  max_iterations=args.max_iter,
                  n_runs=args.n_runs,
             )
+            
+            torch.cuda.empty_cache()
+            gc.collect()
+            
             tosave = {
                 'selected_metrics' : selected_metrics_arr,
                 'optimums': optimums_arr,
@@ -99,8 +109,6 @@ def main(args: argparse.Namespace):
             repo_saved_info[metric_subset_size] = tosave
         
         res[repo_index] = repo_saved_info
-        torch.cuda.empty_cache()
-        gc.collect()
     
     # save results properly
     timestamp = datetime.datetime.now().strftime("-%Y-%m-%d_%H-%M")
