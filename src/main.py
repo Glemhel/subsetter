@@ -30,11 +30,11 @@ def run_analysis(data,
                  metric_subset_size=10,
                  error_function=SammonError,
                  method=PSOFeatureSelection,
-                 device='cpu',
                  seed=42,
                  num_particles=30,
                  max_iterations=30,
                  n_runs=1,
+                 **opt_params,
                  ):
 
     torch.manual_seed(seed)
@@ -42,7 +42,7 @@ def run_analysis(data,
     optimums_arr = []
     for i in range(n_runs):
         pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}")
-        optimizer = method(data, num_particles, error_function, n_metrics=metric_subset_size, device=device)
+        optimizer = method(data, num_particles, error_function, n_metrics=metric_subset_size, **opt_params)
         for _ in range(max_iterations):
             optimizer.step()
 
@@ -92,11 +92,7 @@ def main(args: argparse.Namespace):
                  metric_subset_size=metric_subset_size,
                  error_function=metrics,
                  method=method,
-                 device=args.device,
-                 seed=args.random_seed,
-                 num_particles=args.num_particles,
-                 max_iterations=args.max_iter,
-                 n_runs=args.n_runs,
+                 **vars(args),
             )
             
             torch.cuda.empty_cache()

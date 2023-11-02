@@ -9,9 +9,9 @@ class Metrics:
 
 
 class SammonError(Metrics):
-    def __init__(self, X, device='cpu'):
+    def __init__(self, X):
         self.X = X
-        self.device = torch.device(device)
+        self.device = X.device
         self.n_classes = X.shape[0]
         self.n_metrics = X.shape[1]
         self.d_original = torch.cdist(X, X, p=2) + 1e-15
@@ -32,9 +32,9 @@ class SammonError(Metrics):
         return sammon_error
 
 class KruskalStress(Metrics):
-    def __init__(self, X, device='cpu'):
+    def __init__(self, X):
         self.X = X
-        self.device = torch.device(device)
+        self.device = X.device
         self.n_classes = X.shape[0]
         self.n_metrics = X.shape[1]
         self.d_original = torch.cdist(X, X, p=2) + 1e-15

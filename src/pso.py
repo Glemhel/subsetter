@@ -1,14 +1,13 @@
 import torch
 
-from metrics import SammonError
 
 class PSOFeatureSelection:
-    def __init__(self, X, num_particles, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, device='cpu'):
-        self.device = torch.device(device)
+    def __init__(self, X, num_particles, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, **opt_params):
         self.num_particles = num_particles
         self.num_features = X.shape[1]
+        self.device = X.device
         self.max_features = n_metrics
-        self.fitness_function = fitness_function(X, device=device)
+        self.fitness_function = fitness_function(X)
         self.w = torch.tensor(w, device=self.device)
         self.c1 = torch.tensor(c1, device=self.device)
         self.c2 = torch.tensor(c2, device=self.device)
