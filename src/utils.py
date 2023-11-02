@@ -17,7 +17,7 @@ class SubsetterArgparser:
         self.parser.add_argument("--n_repos", type=int, default=None, help="Number of repositories to analyze, from n_start (sorted by size) (default None = all)")
         self.parser.add_argument("--i_repo_start", type=int, default=30, help="Index of respository to start with (small indices may not be feasible)")
         self.parser.add_argument("--config", type=str, default=None, help="Config file path")
-        self.parser.add_argument("--device", type=str, choices=['cuda', 'cpu'], default='cpu', help="Device type (cuda or cpu)")
+        self.parser.add_argument("--device", type=str, choices=['cuda', 'cpu'], default='cuda', help="Device type (cuda or cpu)")
         self.parser.add_argument("--metrics_subset", nargs="+", type=int, default =[2, 5, 10], help="List of metrics subset sizes for analysis")
         self.parser.add_argument("--max_iter", type=int, default=30, help="Number of optimization steps")
         self.parser.add_argument("--num_particles", type=int, default=30, help="Number of particles (PSO)")

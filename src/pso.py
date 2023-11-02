@@ -2,7 +2,7 @@ import torch
 
 
 class PSOFeatureSelection:
-    def __init__(self, X, num_particles, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, **opt_params):
+    def __init__(self, X, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, num_particles=30, **opt_params):
         self.num_particles = num_particles
         self.num_features = X.shape[1]
         self.device = X.device
@@ -34,7 +34,7 @@ class PSOFeatureSelection:
     def get_best_opt_value(self):
         return self.pbest_fitness[self.gbest].cpu()
 
-    def step(self):
+    def step(self, i):
         # (6) Update velocities and positions
         r1, r2 = torch.rand(2, device=self.device)
         self.velocities = (self.w * self.velocities + 

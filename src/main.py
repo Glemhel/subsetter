@@ -1,4 +1,5 @@
 from pso import PSOFeatureSelection
+from sa import SimulatedAnnealing
 from metrics import SammonError, KruskalStress
 from tqdm import tqdm, trange
 import numpy as np
@@ -31,8 +32,7 @@ def run_analysis(data,
                  error_function=SammonError,
                  method=PSOFeatureSelection,
                  seed=42,
-                 num_particles=30,
-                 max_iterations=30,
+                 max_iter=30,
                  n_runs=1,
                  **opt_params,
                  ):
@@ -42,9 +42,9 @@ def run_analysis(data,
     optimums_arr = []
     for i in range(n_runs):
         pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}")
-        optimizer = method(data, num_particles, error_function, n_metrics=metric_subset_size, **opt_params)
-        for _ in range(max_iterations):
-            optimizer.step()
+        optimizer = method(data, error_function, n_metrics=metric_subset_size, **opt_params)
+        for i in range(max_iter):
+            optimizer.step(i)
 
         selected_metrics = optimizer.get_best_metrics()
         selected_metrics_arr.append(selected_metrics.tolist())
@@ -68,6 +68,8 @@ def main(args: argparse.Namespace):
 
     if args.algorithm == 'pso':
         method = PSOFeatureSelection
+    elif args.algorithm == 'sa':
+        method = SimulatedAnnealing
     else:
         raise NotImplementedError(f'Algorithm {args.algorithm} is not supported yet')
     
