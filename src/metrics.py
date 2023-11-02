@@ -20,15 +20,13 @@ class SammonError(Metrics):
 
     def compute(self, included_columns=None):
         # Create a mask to exclude certain columns
-        vals = torch.zeros(included_columns.shape[0], device=self.device)
-        for i, cols in enumerate(included_columns):
-          mask = torch.zeros(self.n_metrics, device=self.device)
-          mask[cols] = 1
-
-          X_masked = self.X * mask
-          d_subset = torch.cdist(X_masked, X_masked, p=2)
-          d_diff = (self.d_original - d_subset) ** 2 / self.d_original
-          e = d_diff.triu(diagonal=1).sum()
-          sammon_error = e / self.error_denominator
-          vals[i] = sammon_error
-        return vals
+        mask = torch.zeros(self.n_metrics, device=self.device)
+        mask[included_columns] = 1
+        # mask deselected to 0
+        X_masked = self.X * mask
+        # compute error
+        d_subset = torch.cdist(X_masked, X_masked, p=2)
+        d_diff = (self.d_original - d_subset) ** 2 / self.d_original
+        e = d_diff.triu(diagonal=1).sum()
+        sammon_error = e / self.error_denominator
+        return sammon_error

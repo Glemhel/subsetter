@@ -25,8 +25,8 @@ class PSOFeatureSelection:
     
     def compute_fitness_(self, x: torch.tensor):
         _, indices = torch.topk(x, self.max_features)
-        fitness = self.fitness_function.compute(indices)
-        return fitness
+        fitness_vals = torch.tensor([self.fitness_function.compute(ind) for ind in indices], device=self.device)
+        return fitness_vals
 
     def get_best_metrics(self):
         _, indices = torch.topk(self.pbest[self.gbest], self.max_features)
