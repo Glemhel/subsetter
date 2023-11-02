@@ -15,7 +15,8 @@ import pickle
 import gc
 import os
 
-from icecream import ic
+from icecream import install
+install()
 
 
 def get_data_i(data, i, kind='function'):
@@ -54,8 +55,6 @@ def run_analysis(data,
         torch.cuda.empty_cache()
         gc.collect()
 
-    # ic(selected_metrics_arr)
-    # ic(optimums_arr)
 
     return selected_metrics_arr, optimums_arr
 
@@ -78,8 +77,6 @@ def main(args: argparse.Namespace):
         raise NotImplementedError(f'Metrics {args.metrics} is not supported yet')
     # loop over repositories
     r = args.i_repo_start + args.n_repos if args.n_repos else len(indices_size_descending)
-    # ic(args)
-    # ic(r)
     for repo_index in (pbar := trange(args.i_repo_start, r)):
         index = indices_size_descending[repo_index]
         repo_data = get_data_i(data, index, args.kind)

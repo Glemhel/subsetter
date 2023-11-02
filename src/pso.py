@@ -1,7 +1,6 @@
 import torch
 
 from metrics import SammonError
-from icecream import ic
 
 class PSOFeatureSelection:
     def __init__(self, X, num_particles, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, device='cpu'):
@@ -21,13 +20,11 @@ class PSOFeatureSelection:
         # Initialize best positions and best global position
         self.pbest = self.particles
         self.pbest_fitness = self.compute_fitness_(self.pbest)
-        # ic(self.pbest_fitness)
         
         self.gbest = self.pbest_fitness.argmin()
     
     def compute_fitness_(self, x: torch.tensor):
         _, indices = torch.topk(x, self.max_features)
-        # ic(indices)
         fitness = self.fitness_function.compute(indices)
         return fitness
 
@@ -40,7 +37,6 @@ class PSOFeatureSelection:
 
     def step(self):
         # (6) Update velocities and positions
-        # ic()
         r1, r2 = torch.rand(2, device=self.device)
         self.velocities = (self.w * self.velocities + 
                            self.c1 * r1 * (self.pbest - self.particles) +
@@ -48,16 +44,12 @@ class PSOFeatureSelection:
                           )
         self.particles = self.particles + self.velocities
         # (7) Evaluate on new particles
-        # ic()
         fitness_new = self.compute_fitness_(self.particles)
-        # ic()
         # (8) Update pbest
         fitness_mask = self.pbest_fitness >= fitness_new
     
         self.pbest[fitness_mask, :] = self.particles[fitness_mask, :]
         self.pbest_fitness[fitness_mask] = fitness_new[fitness_mask]
-        # ic(fitness_new)
-        # ic(self.pbest_fitness)
 
         # (8) Update gbest
         self.gbest = self.pbest_fitness.argmin()
