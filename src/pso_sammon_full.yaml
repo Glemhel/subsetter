@@ -1,0 +1,12 @@
+random_seed: 42
+algorithm: pso
+metrics: sammon
+kind: function
+max_iter: 30
+metrics_subset: [2, 3, 4, 5, 7, 10, 12, 15, 17, 20, 25, 30, 35, 40, 45, 50]
+device: cuda
+n_repos: 359
+i_repo_start: 6
+n_runs: 2
+num_particles: 30
+
