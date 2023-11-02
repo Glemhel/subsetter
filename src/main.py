@@ -1,5 +1,5 @@
 from pso import PSOFeatureSelection
-from metrics import SammonError
+from metrics import SammonError, KruskalStress
 from tqdm import tqdm, trange
 import numpy as np
 import pandas as pd
@@ -73,8 +73,11 @@ def main(args: argparse.Namespace):
     
     if args.metrics == 'sammon':
         metrics = SammonError
+    elif args.metrics == 'kruskal':
+        metrics = KruskalStress
     else:
         raise NotImplementedError(f'Metrics {args.metrics} is not supported yet')
+
     # loop over repositories
     r = args.i_repo_start + args.n_repos if args.n_repos else len(indices_size_descending)
     for repo_index in (pbar := trange(args.i_repo_start, r)):
