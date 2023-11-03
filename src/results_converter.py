@@ -3,18 +3,25 @@ import argparse
 from pathlib import Path
 from math import isnan
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        prog="Results converter",
-        description="Converts report.yaml into a .dat file suitable for plotting"
-    )
-    parser.add_argument('reportfile')
-    args = parser.parse_args()
-    
-    print(f"Reading report from {args.reportfile}")
-    with open(args.reportfile, 'r') as f:
-        report = yaml.safe_load(f)
+def get_best_metrics_id(report, n_metrics=10):
+    metrics_count = {}
+    for repo_id in report:
+        stats = report[repo_id][n_metrics]['selected_metrics']
+        for selected_metrics in stats:
+            for metric in selected_metrics:
+                if metric not in metrics_count:
+                    metrics_count[metric] = 0
+                metrics_count[metric] += 1
 
+    metrics_arr = [(k,v) for k, v in metrics_count.items()]
+    metrics_arr_sorted = sorted(metrics_arr, key = lambda x: -x[1])
+    
+    ids = metrics_arr_sorted[:n_metrics]
+    res = [x for x, y in ids]
+    print(res)
+    return res
+
+def extract_metrics(report):
     print("Extracting metrics")
     transformed = {}
     for repo_id in report.keys():
@@ -42,3 +49,17 @@ if __name__ == "__main__":
         for n in transformed.keys():
             n_max, n_min, n_avg = transformed[n]
             f.write(f'{n}    {n_max}    {n_min}    {n_avg}\n')
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="Results converter",
+        description="Converts report.yaml into a .dat file suitable for plotting"
+    )
+    parser.add_argument('reportfile')
+    args = parser.parse_args()
+    
+    print(f"Reading report from {args.reportfile}")
+    with open(args.reportfile, 'r') as f:
+        report = yaml.safe_load(f)
+
+    get_best_metrics_id(report)
