@@ -1,5 +1,5 @@
 import torch
-
+from utils import OptimizationAlgorithm
 
 class PSOFeatureSelection:
     def __init__(self, X, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, num_particles=30, **opt_params):
