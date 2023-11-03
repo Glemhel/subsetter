@@ -134,7 +134,7 @@ def load_metrics_file(path) -> Tuple[pd.DataFrame, List[int]]:
              and an array of repository IDs ordered by size.
     """
     data = pd.read_csv(path, dtype=np.float32)
-    data.rename(columns={"Unnamed: 0": "repo_id"}, inplace=True)
+    data.rename(columns={"url": "repo_id"}, inplace=True)
     data.repo_id = data.repo_id.astype(int)
     repos_order_by_size = data.repo_id.value_counts().index.values
     return data, repos_order_by_size
