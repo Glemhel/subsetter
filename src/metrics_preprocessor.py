@@ -32,6 +32,8 @@ if __name__ == "__main__":
     function_metrics = d.explode(function_metrics_list)
     function_metrics.replace({'url': repo_url_encoder}, inplace=True)
     
+    function_metrics.dropna(inplace=True)
+    
     scaler = StandardScaler()
     function_metrics[function_metrics_list] = scaler.fit_transform(function_metrics[function_metrics_list])
     function_metrics.to_csv(args.output, index=False)
