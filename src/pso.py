@@ -28,7 +28,7 @@ class PSOFeatureSelection:
         return fitness_vals
 
     def get_best_metrics(self):
-        _, indices = torch.topk(self.pbest[self.gbest], self.max_features)
+        _, indices = torch.topk(self.pbest[self.gbest], self.num_features)
         return indices.cpu()
 
     def get_best_opt_value(self):

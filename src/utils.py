@@ -134,6 +134,9 @@ def load_metrics_file(path) -> Tuple[pd.DataFrame, List[int]]:
              and an array of repository IDs ordered by size.
     """
     data = pd.read_csv(path, dtype=np.float32)
+    n_nans = data.isna().values.sum()
+    if n_nans > 0:
+        raise ValueError(f"NaNs detected, count={n_nans}. Terminating...")
     data.rename(columns={"url": "repo_id"}, inplace=True)
     data.repo_id = data.repo_id.astype(int)
     repos_order_by_size = data.repo_id.value_counts().index.values

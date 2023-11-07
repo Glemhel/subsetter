@@ -68,7 +68,10 @@ def run_analysis(
     optimums_arr = []
     # run optimization algorithm n_runs times
     for i in range(n_runs):
-        pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}")
+        if i > 0:
+            pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}; Opt: {optimums_arr[-1]:4f}")
+        else:
+            pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs};")
         optimizer = method(
             data, error_function, n_metrics=metric_subset_size, **opt_params
         )
@@ -158,6 +161,7 @@ def main(args: argparse.Namespace):
     savepath = f"results{timestamp}.yaml"
     with open(savepath, "w") as yaml_file:
         yaml.dump(res, yaml_file, default_flow_style=False)
+    print(f"Results saved to {savepath}")
 
 
 if __name__ == "__main__":
