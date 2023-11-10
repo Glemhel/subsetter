@@ -63,3 +63,4 @@ if __name__ == "__main__":
         report = yaml.safe_load(f)
 
     get_best_metrics_id(report)
+    extract_metrics(report)
