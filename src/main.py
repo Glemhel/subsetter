@@ -1,7 +1,7 @@
 from pso import PSOFeatureSelection
 from sa import SimulatedAnnealing
 from utils import OptimizationAlgorithm
-from metrics import Metrics, SammonError, KruskalStress
+from metrics import Metrics, SammonError, KruskalStress, EditDistance
 from tqdm import tqdm, trange
 import numpy as np
 import pandas as pd
@@ -69,9 +69,13 @@ def run_analysis(
     # run optimization algorithm n_runs times
     for i in range(n_runs):
         if i > 0:
-            pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}; Opt: {optimums_arr[-1]:4f}")
+            pbar.set_postfix_str(
+                f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs}; Opt: {optimums_arr[-1]:4f}"
+            )
         else:
-            pbar.set_postfix_str(f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs};")
+            pbar.set_postfix_str(
+                f"N_metrics: {metric_subset_size}; Run: {i+1}/{n_runs};"
+            )
         optimizer = method(
             data, error_function, n_metrics=metric_subset_size, **opt_params
         )
@@ -103,7 +107,13 @@ def main(args: argparse.Namespace):
     res = {}  # saving experiment data
 
     # Get data for repositories
-    data_path = os.path.join("..", "data", "function_metrics.csv")
+    if args.kind == "function":
+        filename = "function_metrics.csv"
+    elif args.kind == "struct":
+        filename = "struct_metrics.csv"
+    else:
+        raise ValueError(f"Objects {args.kind} are not supported yet")
+    data_path = os.path.join("..", "data", filename)
     data, indices_size_descending = load_metrics_file(data_path)
     device = torch.device(args.device)
 
@@ -118,8 +128,14 @@ def main(args: argparse.Namespace):
         metrics = SammonError
     elif args.metrics == "kruskal":
         metrics = KruskalStress
+    elif args.metrics == "editdist":
+        metrics = EditDistance
     else:
         raise NotImplementedError(f"Metrics {args.metrics} is not supported yet")
+
+    # results saving path
+    timestamp = datetime.datetime.now().strftime("-%Y-%m-%d_%H-%M")
+    savepath = f"results{timestamp}.yaml"
 
     # loop over repositories
     r = (
@@ -156,12 +172,12 @@ def main(args: argparse.Namespace):
 
         res[repo_index] = repo_saved_info
 
-    # save results to yaml
-    timestamp = datetime.datetime.now().strftime("-%Y-%m-%d_%H-%M")
-    savepath = f"results{timestamp}.yaml"
-    with open(savepath, "w") as yaml_file:
-        yaml.dump(res, yaml_file, default_flow_style=False)
-    print(f"Results saved to {savepath}")
+        # save results to yaml after each 5 iterations
+        if (repo_index + 1) % 5 == 0:
+            with open(savepath, "w") as yaml_file:
+                yaml.dump(res, yaml_file, default_flow_style=False)
+
+    print(f"All results saved to {savepath}")
 
 
 if __name__ == "__main__":
