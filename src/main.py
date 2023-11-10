@@ -32,7 +32,7 @@ def get_data_i(data: pd.DataFrame, i: int, kind="function") -> torch.Tensor:
     :param kind: Type of data to retrieve (currently only 'function' is supported).
     :return: Tensor containing data for the specified repository.
     """
-    if kind != "function":
+    if kind not in ["function", "struct"]:
         raise NotImplementedError
     datai = data[data["repo_id"] == i]
     return torch.tensor(datai.drop(columns=["repo_id"]).values)
