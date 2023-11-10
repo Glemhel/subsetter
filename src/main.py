@@ -119,8 +119,12 @@ def main(args: argparse.Namespace):
 
     if args.algorithm == "pso":
         method = PSOFeatureSelection
+        if args.max_iter > 100:
+            raise ValueError("Too many iterations for PSO algorithm!")
     elif args.algorithm == "sa":
         method = SimulatedAnnealing
+        if args.max_iter < 100:
+            raise ValueError("Too few iterations for SA algorithm!")
     else:
         raise NotImplementedError(f"Algorithm {args.algorithm} is not supported yet")
 
