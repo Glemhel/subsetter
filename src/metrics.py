@@ -88,11 +88,12 @@ class EditDistance(Metrics):
     def make_adj_matrix_(self, X):
         # distance graph
         adj_matrix = torch.cdist(X, X, p=2)
-        # filtering edges - largest 90%
-        n_ban = int(adj_matrix.shape[0] * 0.9) - 1
+        # filtering edges - largest 70%
+        n_ban = int(adj_matrix.shape[0] * 0.7) - 1
         _, ind = adj_matrix.topk(n_ban, largest=True)
-        adj_matrix.scatter_(index=ind, dim=1, value=0)
-        return adj_matrix
+        adj_matrix_01 = torch.ones_like(adj_matrix)
+        adj_matrix_01.scatter_(index=ind, dim=1, value=0)
+        return adj_matrix_01
 
     def compute(self, included_columns=None):
         # Create a mask to exclude certain columns
@@ -104,5 +105,6 @@ class EditDistance(Metrics):
         # distance graph matrix
         d_subset = self.make_adj_matrix_(X_masked)
 
-        value = (d_subset - self.d_original).abs().sum() / d_subset.shape[0] ** 2
+        edit_dist = (d_subset - self.d_original).abs().sum()
+        value = edit_dist / d_subset.shape[0] ** 2
         return value

@@ -181,6 +181,8 @@ def main(args: argparse.Namespace):
             with open(savepath, "w") as yaml_file:
                 yaml.dump(res, yaml_file, default_flow_style=False)
 
+    with open(savepath, "w") as yaml_file:
+        yaml.dump(res, yaml_file, default_flow_style=False)
     print(f"All results saved to {savepath}")
 
 
