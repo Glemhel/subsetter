@@ -29,6 +29,7 @@ class SammonError(Metrics):
         d_diff = (self.d_original - d_subset) ** 2 / self.d_original
         e = d_diff.triu(diagonal=1).sum()
         sammon_error = e / self.error_denominator
+        # assert 0 <= sammon_error <= 1
         return sammon_error
 
 
@@ -88,7 +89,7 @@ class EditDistance(Metrics):
     def make_adj_matrix_(self, X):
         # distance graph
         adj_matrix = torch.cdist(X, X, p=2)
-        # filtering edges - largest 70%
+        # filtering edges - largest 70% are set to 0
         n_ban = int(adj_matrix.shape[0] * 0.7) - 1
         _, ind = adj_matrix.topk(n_ban, largest=True)
         adj_matrix_01 = torch.ones_like(adj_matrix)

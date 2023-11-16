@@ -27,15 +27,15 @@ def extract_metrics(report):
     for repo_id in report.keys():
         for n in report[repo_id].keys():
             optimums = report[repo_id][n]['optimums']
-            cur_min, cur_max, cur_avg = min(optimums), max(optimums), sum(optimums) / len(optimums)
+            cur_val = min(optimums)
             if n in transformed.keys():
                 stored_min, stored_max, stored_avg = transformed[n]
-                stored_min = min(cur_min, stored_min) if not isnan(cur_min) else stored_min
-                stored_max = max(cur_max, stored_max) if not isnan(cur_max) else stored_max
-                stored_avg += cur_avg if not isnan(cur_avg) else 0
+                stored_min = min(cur_val, stored_min) if not isnan(cur_val) else stored_min
+                stored_max = max(cur_val, stored_max) if not isnan(cur_val) else stored_max
+                stored_avg += cur_val if not isnan(cur_val) else 0
                 transformed[n] = [stored_min, stored_max, stored_avg]
             else:
-                transformed[n] = [cur_min, cur_max, cur_avg]
+                transformed[n] = [cur_val] * 3
 
     # Normalize averages
     n_repos = len(report.keys())
@@ -47,7 +47,7 @@ def extract_metrics(report):
         # Write header
         f.write("n_metrics    max    min   avg\n")
         for n in transformed.keys():
-            n_max, n_min, n_avg = transformed[n]
+            n_min, n_max, n_avg = transformed[n]
             f.write(f'{n}    {n_max}    {n_min}    {n_avg}\n')
 
 if __name__ == "__main__":
