@@ -1,0 +1,12 @@
+random_seed: 42
+algorithm: sa
+metrics: editdist
+kind: struct
+max_iter: 500
+metrics_subset: [2, 3, 5, 10, 15, 20, 30]
+device: cuda
+n_repos: 150
+i_repo_start: 150
+n_runs: 3
+temp: 10
+run_id: struct-sa-editdist-small
