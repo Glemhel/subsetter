@@ -2,13 +2,15 @@ import yaml
 import argparse
 from pathlib import Path
 from math import isnan
+import os
 
-def get_best_metrics_id(report, n_metrics=10):
+def get_best_metrics_id(report, n_metrics=10, kind='function'):
+    print(f'Getting best {n_metrics = } for {kind = }')
     metrics_count = {}
     for repo_id in report:
         stats = report[repo_id][n_metrics]['selected_metrics']
         for selected_metrics in stats:
-            for metric in selected_metrics:
+            for metric in selected_metrics[:n_metrics]:
                 if metric not in metrics_count:
                     metrics_count[metric] = 0
                 metrics_count[metric] += 1
@@ -16,10 +18,16 @@ def get_best_metrics_id(report, n_metrics=10):
     metrics_arr = [(k,v) for k, v in metrics_count.items()]
     metrics_arr_sorted = sorted(metrics_arr, key = lambda x: -x[1])
     
-    ids = metrics_arr_sorted[:n_metrics]
-    res = [x for x, y in ids]
-    print(res)
-    return res
+    res = metrics_arr_sorted[:n_metrics]
+    metrics_names_list_path = os.path.join('..', 'data', f'{kind}_metrics.txt')
+    with open(metrics_names_list_path, 'r') as f:
+        metrics_names_list = f.readlines()
+    
+    savepath = f"{Path(args.reportfile).stem}-best_metrics.dat"
+    print(f"Saving best metrics to {savepath}")
+    with open(savepath, "w") as f:
+        for i, (metric_id, vote_count) in enumerate(res, 1):
+            f.write(f'{i}    {metric_id}    {metrics_names_list[metric_id]}    {vote_count}\n')
 
 def extract_metrics(report):
     print("Extracting metrics")
@@ -62,5 +70,10 @@ if __name__ == "__main__":
     with open(args.reportfile, 'r') as f:
         report = yaml.safe_load(f)
 
-    get_best_metrics_id(report)
+    if args.reportfile.find('struct') != -1:
+        kind = 'struct'
+    else:
+        kind = 'function'
+
+    get_best_metrics_id(report, kind=kind)
     extract_metrics(report)
