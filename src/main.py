@@ -139,7 +139,7 @@ def main(args: argparse.Namespace):
 
     # results saving path
     timestamp = datetime.datetime.now().strftime("-%Y-%m-%d_%H-%M")
-    savepath = f"results{timestamp}.yaml"
+    savepath = f"results-{args.run_id}-{timestamp}.yaml"
 
     # loop over repositories
     r = (

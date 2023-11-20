@@ -5,16 +5,18 @@ import shutil
 from math import isnan
 import os
 
+import numpy as np
+
 def get_best_metrics_id(report, n_metrics=10, kind='function', path_prefix='.'):
     print(f'Getting best {n_metrics = } for {kind = }')
     metrics_count = {}
     for repo_id in report:
         stats = report[repo_id][n_metrics]['selected_metrics']
-        for selected_metrics in stats:
-            for metric in selected_metrics[:n_metrics]:
-                if metric not in metrics_count:
-                    metrics_count[metric] = 0
-                metrics_count[metric] += 1
+        best_run_id = np.argmin(report[repo_id][n_metrics]['optimums'])
+        for metric in stats[best_run_id][:n_metrics]:
+            if metric not in metrics_count:
+                metrics_count[metric] = 0
+            metrics_count[metric] += 1
 
     metrics_arr = [(k,v) for k, v in metrics_count.items()]
     metrics_arr_sorted = sorted(metrics_arr, key = lambda x: -x[1])
