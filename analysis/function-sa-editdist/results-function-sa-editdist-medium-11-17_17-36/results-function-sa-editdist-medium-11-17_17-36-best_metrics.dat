@@ -1,0 +1,19 @@
+1    68    rca.function.mi.mi_visual_studio    287
+2    66    rca.function.mi.mi_original
+    270
+3    39    rca.function.nexits.max
+    246
+4    33    rca.function.nargs.functions_max
+    239
+5    30    rca.function.nargs.average_functions
+    226
+6    55    rca.function.halstead.difficulty
+    224
+7    44    rca.function.nom.closures_average
+    204
+8    38    rca.function.nexits.average
+    198
+9    50    rca.function.nom.functions_min
+    195
+10    28    rca.function.nargs.average
+    195

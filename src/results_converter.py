@@ -1,10 +1,11 @@
 import yaml
 import argparse
 from pathlib import Path
+import shutil
 from math import isnan
 import os
 
-def get_best_metrics_id(report, n_metrics=10, kind='function'):
+def get_best_metrics_id(report, n_metrics=10, kind='function', path_prefix='.'):
     print(f'Getting best {n_metrics = } for {kind = }')
     metrics_count = {}
     for repo_id in report:
@@ -23,13 +24,13 @@ def get_best_metrics_id(report, n_metrics=10, kind='function'):
     with open(metrics_names_list_path, 'r') as f:
         metrics_names_list = f.readlines()
     
-    savepath = f"{Path(args.reportfile).stem}-best_metrics.dat"
+    savepath = os.path.join(path_prefix, f"{Path(args.reportfile).stem}-best_metrics.dat")
     print(f"Saving best metrics to {savepath}")
     with open(savepath, "w") as f:
         for i, (metric_id, vote_count) in enumerate(res, 1):
             f.write(f'{i}    {metric_id}    {metrics_names_list[metric_id]}    {vote_count}\n')
 
-def extract_metrics(report):
+def extract_metrics(report, path_prefix='.'):
     print("Extracting metrics")
     transformed = {}
     for repo_id in report.keys():
@@ -37,26 +38,27 @@ def extract_metrics(report):
             optimums = report[repo_id][n]['optimums']
             cur_val = min(optimums)
             if n in transformed.keys():
-                stored_min, stored_max, stored_avg = transformed[n]
+                stored_min, stored_avg, stored_max = transformed[n]
                 stored_min = min(cur_val, stored_min) if not isnan(cur_val) else stored_min
                 stored_max = max(cur_val, stored_max) if not isnan(cur_val) else stored_max
                 stored_avg += cur_val if not isnan(cur_val) else 0
-                transformed[n] = [stored_min, stored_max, stored_avg]
+                transformed[n] = [stored_min, stored_avg, stored_max]
             else:
                 transformed[n] = [cur_val] * 3
 
     # Normalize averages
     n_repos = len(report.keys())
     for n in transformed.keys():
-        transformed[n][2] /= n_repos
+        transformed[n][1] /= n_repos
    
     print("Saving transformed report")
-    with open(f"{Path(args.reportfile).stem}.dat", "w") as f:
+    savepath = os.path.join(path_prefix, f"{Path(args.reportfile).stem}.dat")
+    with open(savepath, "w") as f:
         # Write header
-        f.write("n_metrics    max    min   avg\n")
+        f.write("n_metrics    min    avg   max\n")
         for n in transformed.keys():
-            n_min, n_max, n_avg = transformed[n]
-            f.write(f'{n}    {n_max}    {n_min}    {n_avg}\n')
+            n_min, n_avg, n_max = transformed[n]
+            f.write(f'{n}    {n_min}    {n_avg}    {n_max}\n')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -75,5 +77,15 @@ if __name__ == "__main__":
     else:
         kind = 'function'
 
-    get_best_metrics_id(report, kind=kind)
-    extract_metrics(report)
+    # saving to separate folder
+    subfolder = '-'.join(Path(args.reportfile).stem.split('-')[1:4])
+    experiment_folder = Path(args.reportfile).stem
+    savepath = os.path.join('..', 'analysis', subfolder, experiment_folder)
+    if os.path.isdir(savepath):
+        raise FileExistsError('Folder already exists. Aborting...')
+    os.makedirs(savepath)
+    print(f"Saving processed results to folder {savepath}")
+    shutil.copyfile(args.reportfile, os.path.join(savepath, Path(args.reportfile).name))
+
+    get_best_metrics_id(report, kind=kind, path_prefix=savepath)
+    extract_metrics(report, path_prefix=savepath)
