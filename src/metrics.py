@@ -21,10 +21,10 @@ class SammonError:
 
         self.d_original_flattened = torch.cdist(X, X, p=2)[
             self.upper_triangular_indexer[0], self.upper_triangular_indexer[1]
-        ] + 1e-15
-        self.d_original_flattened
-        self.d_original_flattened_sum = self.d_original_flattened.sum()
-        torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened)).sum()
+        ]
+        self.close_mask = ~torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened))
+        self.d_original_flattened_sum = (self.d_original_flattened * self.close_mask).nansum()
+        # ic(torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened)).sum())
 
     def compute(self, included_columns=None):
         # Create a mask to exclude certain columns
@@ -39,7 +39,7 @@ class SammonError:
         d_diff = (
             self.d_original_flattened - d_subset_flattened
         ) ** 2 / self.d_original_flattened
-        sammon_error = d_diff.sum() / self.d_original_flattened_sum
+        sammon_error = (d_diff * self.close_mask).nansum() / self.d_original_flattened_sum
         # assert 0 <= sammon_error <= 1
         return sammon_error
 
