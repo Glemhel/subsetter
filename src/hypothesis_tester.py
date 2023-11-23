@@ -83,7 +83,7 @@ def run_detailed(metrics, report_1, report_2, fitness_function, voting_set, vali
         loss_1 = compute_loss(metrics, fitness_function, validation_set, best_metrics_1, indices_size_descending)
         loss_2 = compute_loss(metrics, fitness_function, validation_set, best_metrics_2, indices_size_descending)
 
-        u1, p = mannwhitneyu(losses_1, losses_2)
+        u1, p = mannwhitneyu(loss_1, loss_2)
         n1, n2 = len(loss_1), len(loss_2)
         u2 = n1 * n2 - u1
         print(f'{subset_size:11} | {u1: <7} | {u2: <7} | {p}')
