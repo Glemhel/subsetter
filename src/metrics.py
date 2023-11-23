@@ -23,6 +23,7 @@ class SammonError:
             self.upper_triangular_indexer[0], self.upper_triangular_indexer[1]
         ]
         self.close_mask = ~torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened))
+        # ic((~self.close_mask).sum()/self.close_mask.shape[0], ' values near 0 in cdist')
         self.d_original_flattened_sum = (self.d_original_flattened * self.close_mask).nansum()
         # ic(torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened)).sum())
 
