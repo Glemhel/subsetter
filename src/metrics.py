@@ -9,14 +9,23 @@ class Metrics:
         raise NotImplementedError("Subclasses must implement the compute method")
 
 
-class SammonError(Metrics):
+class SammonError:
     def __init__(self, X):
         self.X = X
         self.device = X.device
         self.n_classes = X.shape[0]
         self.n_metrics = X.shape[1]
-        self.d_original = torch.cdist(X, X, p=2) + 1e-15
-        self.error_denominator = self.d_original.triu(diagonal=1).sum()
+        self.upper_triangular_indexer = torch.triu_indices(
+            X.shape[0], X.shape[0], 1, device=X.device
+        )
+
+        self.d_original_flattened = torch.cdist(X, X, p=2)[
+            self.upper_triangular_indexer[0], self.upper_triangular_indexer[1]
+        ]
+        self.close_mask = ~torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened))
+        # ic((~self.close_mask).sum()/self.close_mask.shape[0], ' values near 0 in cdist')
+        self.d_original_flattened_sum = (self.d_original_flattened * self.close_mask).nansum()
+        # ic(torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened)).sum())
 
     def compute(self, included_columns=None):
         # Create a mask to exclude certain columns
@@ -25,10 +34,13 @@ class SammonError(Metrics):
         # mask deselected to 0
         X_masked = self.X * mask
         # compute error
-        d_subset = torch.cdist(X_masked, X_masked, p=2)
-        d_diff = (self.d_original - d_subset) ** 2 / self.d_original
-        e = d_diff.triu(diagonal=1).sum()
-        sammon_error = e / self.error_denominator
+        d_subset_flattened = torch.cdist(X_masked, X_masked, p=2)[
+            self.upper_triangular_indexer[0], self.upper_triangular_indexer[1]
+        ]
+        d_diff = (
+            self.d_original_flattened - d_subset_flattened
+        ) ** 2 / self.d_original_flattened
+        sammon_error = (d_diff * self.close_mask).nansum() / self.d_original_flattened_sum
         # assert 0 <= sammon_error <= 1
         return sammon_error
 

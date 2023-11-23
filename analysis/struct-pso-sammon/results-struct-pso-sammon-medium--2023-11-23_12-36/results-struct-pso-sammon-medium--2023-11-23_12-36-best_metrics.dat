@@ -1,0 +1,20 @@
+1    54    rca.impl.nom.closures_max
+    167
+2    14    rca.impl.halstead.purity_ratio
+    157
+3    53    rca.impl.nom.closures_average
+    136
+4    12    rca.impl.halstead.n1
+    131
+5    27    rca.impl.loc.lloc_average
+    118
+6    41    rca.impl.nargs.average
+    98
+7    46    rca.impl.nargs.functions_max
+    95
+8    43    rca.impl.nargs.average_functions
+    89
+9    23    rca.impl.loc.cloc_average
+    84
+10    19    rca.impl.loc.blank_average
+    83
