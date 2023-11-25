@@ -2,6 +2,10 @@ import torch
 from utils import OptimizationAlgorithm
 
 class PSOFeatureSelection:
+    """
+    Particle swarm optimization algorithm, which optimise a number of vectors in
+    given metric, using each others values. 
+    """
     def __init__(self, X, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, num_particles=30, **opt_params):
         self.num_particles = num_particles
         self.num_features = X.shape[1]
