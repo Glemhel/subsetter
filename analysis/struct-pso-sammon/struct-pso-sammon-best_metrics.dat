@@ -1,22 +1,14 @@
 1    54    rca.impl.nom.closures_max
-    177
+    149
 2    14    rca.impl.halstead.purity_ratio
-    172
-3    12    rca.impl.halstead.n1
-    152
-4    53    rca.impl.nom.closures_average
-    136
+    134
+3    53    rca.impl.nom.closures_average
+    124
+4    12    rca.impl.halstead.n1
+    121
 5    27    rca.impl.loc.lloc_average
-    135
-6    43    rca.impl.nargs.average_functions
-    102
-7    46    rca.impl.nargs.functions_max
-    92
-8    38    rca.impl.mi.mi_original
-    90
-9    7    rca.impl.halstead.difficulty
-    87
-10    23    rca.impl.loc.cloc_average
-    86
-11    39    rca.impl.mi.mi_sei
     83
+6    41    rca.impl.nargs.average
+    82
+7    43    rca.impl.nargs.average_functions
+    74

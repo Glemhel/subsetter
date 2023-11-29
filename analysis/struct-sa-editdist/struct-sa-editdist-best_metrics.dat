@@ -1,14 +1,18 @@
-1    46    rca.impl.nargs.functions_max
+1    2    rca.impl.cyclomatic.min
+    145
+2    14    rca.impl.halstead.purity_ratio
+    124
+3    40    rca.impl.mi.mi_visual_studio
     123
-2    38    rca.impl.mi.mi_original
+4    43    rca.impl.nargs.average_functions
     118
-3    2    rca.impl.cyclomatic.min
+5    38    rca.impl.mi.mi_original
     113
-4    40    rca.impl.mi.mi_visual_studio
-    113
-5    27    rca.impl.loc.lloc_average
-    96
-6    43    rca.impl.nargs.average_functions
-    90
-7    41    rca.impl.nargs.average
-    83
+6    41    rca.impl.nargs.average
+    106
+7    12    rca.impl.halstead.n1
+    104
+8    46    rca.impl.nargs.functions_max
+    98
+9    39    rca.impl.mi.mi_sei
+    95
