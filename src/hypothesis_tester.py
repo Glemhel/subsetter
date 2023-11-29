@@ -65,9 +65,9 @@ def compute_losses(metrics, report, fitness_function, voting_set, validation_set
     return losses
 
 def run_pairwise_analysis(losses_1, losses_2, metrics_subset_sizes):
-    print('Subset size | Loss 1               | Loss 2')
+    print('Subset size & Loss 1               & Loss 2\\\\ \\hline')
     for subset_size, loss_1, loss_2 in zip(metrics_subset_sizes, losses_1, losses_2):
-        print(f'{subset_size: 11} | {loss_1: <20} | {loss_2}')
+        print(f'{subset_size: 11} & {loss_1: <20.4f} & {loss_2: .4f}\\\\')
 
     u1, p = mannwhitneyu(losses_1, losses_2)
     n1, n2 = len(losses_1), len(losses_2)
@@ -75,7 +75,7 @@ def run_pairwise_analysis(losses_1, losses_2, metrics_subset_sizes):
     print(f'U1 = {u1}, U2 = {u2}, p = {p}')
 
 def run_detailed(metrics, report_1, report_2, fitness_function, voting_set, validation_set, metrics_subset_sizes, indices_size_descending):
-    print('Subset size | U1      | U2      | p')
+    print('Subset size & U1      & U2      & p\\\\ \\hline')
     for subset_size in metrics_subset_sizes:
         best_metrics_1 = get_best_metrics_id(report_1, voting_set, n_metrics=subset_size)
         best_metrics_2 = get_best_metrics_id(report_2, voting_set, n_metrics=subset_size)
@@ -86,7 +86,7 @@ def run_detailed(metrics, report_1, report_2, fitness_function, voting_set, vali
         u1, p = mannwhitneyu(loss_1, loss_2)
         n1, n2 = len(loss_1), len(loss_2)
         u2 = n1 * n2 - u1
-        print(f'{subset_size:11} | {u1: <7} | {u2: <7} | {p}')
+        print(f'{subset_size:11} & {u1: <7.4f} & {u2: <7.4f} & {p if p >= 1e-4 else "<0.0001" :{".4f" if p >= 1e-4 else ""}}\\\\')
     
 
 if __name__ == "__main__":
