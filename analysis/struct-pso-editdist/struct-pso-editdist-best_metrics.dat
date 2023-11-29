@@ -1,0 +1,14 @@
+1    54    rca.impl.nom.closures_max
+    151
+2    38    rca.impl.mi.mi_original
+    116
+3    46    rca.impl.nargs.functions_max
+    116
+4    12    rca.impl.halstead.n1
+    111
+5    43    rca.impl.nargs.average_functions
+    98
+6    40    rca.impl.mi.mi_visual_studio
+    98
+7    2    rca.impl.cyclomatic.min
+    84

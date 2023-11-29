@@ -1,0 +1,14 @@
+1    46    rca.impl.nargs.functions_max
+    123
+2    38    rca.impl.mi.mi_original
+    118
+3    2    rca.impl.cyclomatic.min
+    113
+4    40    rca.impl.mi.mi_visual_studio
+    113
+5    27    rca.impl.loc.lloc_average
+    96
+6    43    rca.impl.nargs.average_functions
+    90
+7    41    rca.impl.nargs.average
+    83
