@@ -155,27 +155,32 @@ def save_table_data(
     metrics_subset_list,
     order_list,
     path_prefix=".",
-    cols_limit=16,
+    kind="function",
 ):
     save_path_ = os.path.join(path_prefix, f"{experiment_name}-optimization_report.csv")
+
+    metrics_names_list_path = os.path.join("..", "data", f"{kind}_metrics.txt")
+    with open(metrics_names_list_path, "r") as f:
+        metrics_names_list = list(map(lambda x: x.strip(), f.readlines()))
+
     with open(save_path_, "w", newline="") as csvfile:
         csvwriter = csv.writer(
             csvfile, delimiter=",", quotechar="|", quoting=csv.QUOTE_MINIMAL
         )
-        csvwriter.writerow(["Metric Id"] + metric_subset_list[:cols_limit])
+        csvwriter.writerow(["Metric"] + metric_subset_list)
         csvwriter.writerow(
             [""]
             + [
                 f"{report_dict[n]['loss']['avg']:.2f}"
-                for n in metrics_subset_list[:cols_limit]
+                for n in metrics_subset_list
             ]
         )
         for metric_id in order_list:
             csvwriter.writerow(
-                [metric_id]
+                [metrics_names_list[metric_id]]
                 + [
                     report_dict[n]["metrics_vote"][metric_id]
-                    for n in metrics_subset_list[:cols_limit]
+                    for n in metrics_subset_list
                 ]
             )
 
@@ -215,14 +220,16 @@ if __name__ == "__main__":
 
     # save .dat for plots
     save_plot_data(result_dict, experiment_folder, path_prefix=savepath)
+    # save optimization data for large tables
     save_table_data(
         result_dict,
         experiment_folder,
         metric_subset_list,
         best_order,
+        kind=kind,
         path_prefix=savepath,
-        cols_limit=16,
     )
+    # save best metrics
     get_best_metrics_id(
         report,
         experiment_folder,
