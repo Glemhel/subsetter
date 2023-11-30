@@ -1,0 +1,12 @@
+random_seed: 42
+algorithm: pso
+metrics: editdist
+kind: struct
+max_iter: 30
+metrics_subset: [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 17, 20, 22, 24, 26, 28, 30, 35, 40]
+device: cuda
+n_repos: 325
+i_repo_start: 25
+n_runs: 3
+num_particles: 30
+run_id: struct-pso-editdist
