@@ -1,0 +1,19 @@
+1    62    rca.function.halstead.purity_ratio
+    239
+2    66    rca.function.mi.mi_original
+    204
+3    60    rca.function.halstead.n1
+    202
+4    48    rca.function.nom.functions_average
+    174
+5    68    rca.function.mi.mi_visual_studio    169
+6    44    rca.function.nom.closures_average
+    151
+7    67    rca.function.mi.mi_sei
+    144
+8    45    rca.function.nom.closures_max
+    138
+9    28    rca.function.nargs.average
+    130
+10    59    rca.function.halstead.level
+    130

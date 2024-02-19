@@ -1,0 +1,20 @@
+1    60    rca.function.halstead.n1
+    197
+2    44    rca.function.nom.closures_average
+    190
+3    46    rca.function.nom.closures_min
+    174
+4    50    rca.function.nom.functions_min
+    174
+5    62    rca.function.halstead.purity_ratio
+    170
+6    26    rca.function.loc.sloc_max
+    145
+7    40    rca.function.nexits.min
+    144
+8    34    rca.function.nargs.functions_min
+    143
+9    30    rca.function.nargs.average_functions
+    135
+10    13    rca.function.loc.cloc_average
+    134

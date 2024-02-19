@@ -1,5 +1,6 @@
 from pso import PSOFeatureSelection
 from sa import SimulatedAnnealing
+from random_search import RandomSearch
 from utils import OptimizationAlgorithm
 from metrics import Metrics, SammonError, KruskalStress, EditDistance
 from tqdm import tqdm, trange
@@ -125,6 +126,8 @@ def main(args: argparse.Namespace):
         method = SimulatedAnnealing
         if args.max_iter < 100:
             raise ValueError("Too few iterations for SA algorithm!")
+    elif args.algorithm == "random":
+        method = RandomSearch
     else:
         raise NotImplementedError(f"Algorithm {args.algorithm} is not supported yet")
 
@@ -138,7 +141,7 @@ def main(args: argparse.Namespace):
         raise NotImplementedError(f"Metrics {args.metrics} is not supported yet")
 
     # results saving path
-    timestamp = datetime.datetime.now().strftime("-%Y-%m-%d_%H-%M")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     savepath = f"results-{args.run_id}-{timestamp}.yaml"
 
     # loop over repositories

@@ -94,6 +94,12 @@ class SubsetterArgparser:
         self.parser.add_argument(
             "--n_runs", type=int, default=1, help="Number of times to run optimization"
         )
+        self.parser.add_argument(
+            "--pso_selection_policy", type=str, default="topk-max", help="Policy on selecting best metrics from PSO swarm coordinates"
+        )
+        self.parser.add_argument(
+            "--run_id", type=str, default="default", help="run name",
+        )
 
     def load_config_from_yaml_(self, config_file: str) -> dict:
         """

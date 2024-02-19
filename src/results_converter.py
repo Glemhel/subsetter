@@ -6,6 +6,8 @@ from math import isnan
 import os
 import csv
 
+
+import pandas as pd
 import numpy as np
 
 
@@ -192,6 +194,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("reportfile")
     parser.add_argument("n_metrics")
+    # parser.add_argument("--path_suffix", type=str, default="")
     args = parser.parse_args()
 
     print(f"Reading report from {args.reportfile}")
@@ -205,6 +208,8 @@ if __name__ == "__main__":
 
     # saving to separate folder
     experiment_folder = "-".join(Path(args.reportfile).stem.split("-")[1:4])
+    # if args.path_suffix:
+    #     experiment_folder = "-".join([experiment_folder, args.path_suffix])
     savepath = os.path.join("..", "analysis", experiment_folder)
     if not os.path.isdir(savepath):  # create if not already
         os.makedirs(savepath)
