@@ -100,6 +100,12 @@ class SubsetterArgparser:
         self.parser.add_argument(
             "--run_id", type=str, default="default", help="run name",
         )
+        self.parser.add_argument(
+            "--drop_correlated", action="store_true", help="flag to drop correlated features",
+        )
+        self.parser.add_argument(
+            "--drop_correlated_thr", type=int, default=0.9, help="thr for dropping correlated features",
+        )
 
     def load_config_from_yaml_(self, config_file: str) -> dict:
         """

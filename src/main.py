@@ -2,6 +2,7 @@ from pso import PSOFeatureSelection
 from sa import SimulatedAnnealing
 from random_search import RandomSearch
 from utils import OptimizationAlgorithm
+from metrics_preprocessor import list_uncorrelated_features
 from metrics import Metrics, SammonError, KruskalStress, EditDistance
 from tqdm import tqdm, trange
 import numpy as np
@@ -24,19 +25,19 @@ from icecream import install
 install()
 
 
-def get_data_i(data: pd.DataFrame, i: int, kind="function") -> torch.Tensor:
+def get_data_i(data: pd.DataFrame, i: int, kind="function") -> pd.DataFrame:
     """
     Get data for a specific repository.
 
     :param data: DataFrame containing metrics data.
     :param i: Repository ID.
     :param kind: Type of data to retrieve (currently only 'function' is supported).
-    :return: Tensor containing data for the specified repository.
+    :return: pd DataFrame containing data for the specified repository.
     """
     if kind not in ["function", "struct"]:
         raise NotImplementedError
     datai = data[data["repo_id"] == i]
-    return torch.tensor(datai.drop(columns=["repo_id"]).values)
+    return datai.drop(columns=["repo_id"])
 
 
 def run_analysis(
@@ -152,8 +153,17 @@ def main(args: argparse.Namespace):
     )
     for repo_index in (pbar := trange(args.i_repo_start, r)):
         index = indices_size_descending[repo_index]
-        repo_data = get_data_i(data, index, args.kind)
+        repo_data_df = get_data_i(data, index, args.kind) # returns a torch.tensor already
+        if args.drop_correlated:
+            if args.uncorrelated_list:
+                metrics_subset_list = args.uncorrelated_list  
+            else:
+                metrics_subset_list = list_uncorrelated_features(repo_data_df, thr=args.drop_correlated_thr)
+        else:
+            metrics_subset_list = None
+        repo_data = torch.tensor(repo_data_df.values)
         repo_data = repo_data.to(device)
+        metrics_subset_list = torch.tensor(metrics_subset_list).to(device)
 
         repo_saved_info = {}
         # loop over metrics values
@@ -164,6 +174,7 @@ def main(args: argparse.Namespace):
                 metric_subset_size=metric_subset_size,
                 error_function=metrics,
                 method=method,
+                metrics_subset_list=metrics_subset_list,
                 **vars(args),
             )
 

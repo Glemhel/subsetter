@@ -1,7 +1,23 @@
 import argparse
 import pandas as pd
+import numpy as np
 from sklearn.preprocessing import StandardScaler
 import json
+
+def list_uncorrelated_features(df, thr = 0.9):
+    """
+    Return list of indices of columns that are not higly correlated
+    """
+    # Create correlation matrix
+    corr_matrix = df.corr().abs()
+    
+    # Select upper triangle of correlation matrix
+    upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+    
+    # Find features with correlation not greater than thr
+    uncorrelated_features_list = [i for i, column in enumerate(upper.columns) if not(any(upper[column] > thr))]
+
+    return uncorrelated_features_list
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -48,4 +64,8 @@ if __name__ == "__main__":
     
     scaler = StandardScaler()
     function_metrics[function_metrics_list] = scaler.fit_transform(function_metrics[function_metrics_list])
+    # Drop highly correlated features
+    # XXX: url column is considered but not dropped due to no correlation! It would be bad if it's dropped..
+    print("Uncorrelated features list:")
+    print(list_uncorrelated_features(function_metrics, thr=0.9))
     function_metrics.to_csv(args.output, index=False)

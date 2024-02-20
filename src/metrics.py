@@ -10,22 +10,25 @@ class Metrics:
 
 
 class SammonError:
-    def __init__(self, X):
-        self.X = X
-        self.device = X.device
-        self.n_classes = X.shape[0]
-        self.n_metrics = X.shape[1]
+    def __init__(self, X, metrics_subset_list=None):
+        if metrics_subset_list is None:
+            metrics_subset_list = X.columns
+        # TODO: error check on metrics presence in subset
+        self.X = X[:, metrics_subset_list] #self.X is subset, but input X is full matrix still
+        self.device = self.X.device
+        self.n_classes = self.X.shape[0]
+        self.n_metrics = self.X.shape[1]
         self.upper_triangular_indexer = torch.triu_indices(
-            X.shape[0], X.shape[0], 1, device=X.device
+            self.X.shape[0], self.X.shape[0], 1, device=self.X.device
         )
 
         self.d_original_flattened = torch.cdist(X, X, p=2)[
             self.upper_triangular_indexer[0], self.upper_triangular_indexer[1]
         ]
         self.close_mask = ~torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened))
-        # ic((~self.close_mask).sum()/self.close_mask.shape[0], ' values near 0 in cdist')
+
         self.d_original_flattened_sum = (self.d_original_flattened * self.close_mask).nansum()
-        # ic(torch.isclose(self.d_original_flattened, torch.zeros_like(self.d_original_flattened)).sum())
+
 
     def compute(self, included_columns=None):
         # Create a mask to exclude certain columns

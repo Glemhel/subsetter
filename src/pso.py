@@ -6,13 +6,23 @@ class PSOFeatureSelection:
     Particle swarm optimization algorithm, which optimise a number of vectors in
     given metric, using each others values. 
     """
-    def __init__(self, X, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, num_particles=30, pso_selection_policy='topk-max', **opt_params):
+    def __init__(self, X, fitness_function, w=0.6, c1=2, c2=2, n_metrics=10, num_particles=30, pso_selection_policy='topk-max', metrics_subset_list=None ,**opt_params):
         self.pso_selection_policy = pso_selection_policy
         self.num_particles = num_particles
-        self.num_features = X.shape[1]
-        self.device = X.device
+        if metrics_subset_list is None:
+            metrics_subset_list = X.columns # should not work...
+        else:
+            pass
+            # all_present = min([metric in X.columns for metric in metrics_subset_list])
+            # if not all_present:
+            #     raise ValueError("Some of metrics from metrics_subset_list are not present in dataset")
+        # preprocess to take only features from metrics_subset_list
+        X_subset = X[:, metrics_subset_list]
+
+        self.num_features = X_subset.shape[1]
+        self.device = X_subset.device
         self.max_features = n_metrics
-        self.fitness_function = fitness_function(X)
+        self.fitness_function = fitness_function(X, metrics_subset_list=metrics_subset_list)
         self.w = torch.tensor(w, device=self.device)
         self.c1 = torch.tensor(c1, device=self.device)
         self.c2 = torch.tensor(c2, device=self.device)
